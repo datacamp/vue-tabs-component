@@ -17,6 +17,7 @@
             prefix: { default: '' },
             suffix: { default: '' },
             isDisabled:{ default: false },
+            snowplowId: { default: null },
         },
 
         data: () => ({

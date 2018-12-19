@@ -16,6 +16,7 @@
                    :href="tab.hash"
                    class="tabs-component-tab-a"
                    role="tab"
+                   :data-snowplow="tab.snowplowId"
                 ></a>
             </li>
         </ul>
@@ -150,27 +151,27 @@
                     });
                 }
             },
-            
+
             getTabIndex(hash){
             	const tab = this.findTab(hash);
-            	
+
             	return this.tabs.indexOf(tab);
             },
-            
+
 			getTabHash(index){
             	const tab = this.tabs.find(tab => this.tabs.indexOf(tab) === index);
-            	
+
             	if (!tab) {
 					return;
                 }
-                
+
                 return tab.hash;
 			},
-            
+
             getActiveTab(){
             	return this.findTab(this.activeTabHash);
             },
-            
+
 			getActiveTabIndex() {
             	return this.getTabIndex(this.activeTabHash);
             },
