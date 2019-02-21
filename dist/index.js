@@ -640,6 +640,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         };
     }
 
+    window.tempStorage = null;
+
+    // Does this browser support localStorage?
+    try {
+        window.tempStorage = window.localStorage;
+    } catch (e) {}
+
+    // Does this browser support sessionStorage?
+    try {
+        if (!window.tempStorage) window.tempStorage = window.sessionStorage;
+    } catch (e) {
+        window.localStorage = window.tempStorage;
+    }
+
     var ExpiringStorage = function () {
         function ExpiringStorage() {
             (0, _classCallCheck3.default)(this, ExpiringStorage);
@@ -648,29 +662,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         (0, _createClass3.default)(ExpiringStorage, [{
             key: "get",
             value: function get(key) {
-                var cached = JSON.parse(localStorage.getItem(key));
+                if (localStorage) {
+                    var cached = JSON.parse(localStorage.getItem(key));
 
-                if (!cached) {
+                    if (!cached) {
+                        return null;
+                    }
+
+                    var expires = new Date(cached.expires);
+
+                    if (expires < new Date()) {
+                        localStorage.removeItem(key);
+                        return null;
+                    }
+
+                    return cached.value;
+                } else {
                     return null;
                 }
-
-                var expires = new Date(cached.expires);
-
-                if (expires < new Date()) {
-                    localStorage.removeItem(key);
-                    return null;
-                }
-
-                return cached.value;
             }
         }, {
             key: "set",
             value: function set(key, value, lifeTimeInMinutes) {
-                var currentTime = new Date().getTime();
+                if (localStorage) {
+                    var currentTime = new Date().getTime();
 
-                var expires = new Date(currentTime + lifeTimeInMinutes * 60000);
+                    var expires = new Date(currentTime + lifeTimeInMinutes * 60000);
 
-                localStorage.setItem(key, JSON.stringify({ value: value, expires: expires }));
+                    localStorage.setItem(key, JSON.stringify({ value: value, expires: expires }));
+                }
             }
         }]);
         return ExpiringStorage;
